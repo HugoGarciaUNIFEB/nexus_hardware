@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,400..600,0..1,0&display=swap');
+
+:root {
+  --color-canvas: #18181B;
+  --color-surface: #131316;
+  --color-surface-low: #1B1B1E;
+  --color-surface-card: #27272A;
+  --color-surface-container: #1F1F22;
+  --color-surface-container-high: #2A2A2D;
+  --color-surface-container-highest: #353438;
+  --color-surface-container-lowest: #0E0E11;
+  --color-border: #3F3F46;
+  --color-primary: #10B981;
+  --color-primary-glow: rgba(16, 185, 129, 0.35);
+  --color-text-main: #F9FAFB;
+  --color-text-muted: #9CA3AF;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Tipografias Estruturais */
+h1, h2, h3, h4, .font-headline {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-telemetry, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Micro HUD & Glow Effects */
+.hud-glow-emerald {
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.35);
+}
+
+.hud-glow-subtle {
+  box-shadow: 0 0 16px -2px rgba(16, 185, 129, 0.25);
+}
+
+.hud-card-interactive {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hud-card-interactive:hover {
+  border-color: #10B981;
+  box-shadow: 0 0 20px -2px rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Scrollbar Minimalista */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #131316;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272A;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #10B981;
+}
+
+/* Toast Messages Animation */
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-message {
+  animation: slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

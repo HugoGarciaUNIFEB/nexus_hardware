@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | Nexus Hardware{% endblock %}
+
+{% block content %}
+<div class="flex flex-col w-full">
+
+  <!-- ================= BREADCRUMBS & ATMOSPHERE ================= -->
+  <section class="w-full bg-surface-container-lowest border-b border-outline-variant/30">
+    <div class="max-w-[1440px] mx-auto px-margin py-space-sm">
+      <nav aria-label="Breadcrumb" class="flex items-center gap-space-xs font-label-mono text-xs text-on-surface-variant flex-wrap">
+        <a class="hover:text-primary transition-colors flex items-center gap-1" href="{% url 'store:home' %}">
+          <span class="material-symbols-outlined text-[14px]">home</span>
+          <span>Início</span>
+        </a>
+        <span class="text-outline-variant">/</span>
+        <a class="hover:text-primary transition-colors" href="{% url 'store:catalog' %}">Catálogo</a>
+        <span class="text-outline-variant">/</span>
+        <a class="hover:text-primary transition-colors" href="{% url 'store:catalog' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+        <span class="text-outline-variant">/</span>
+        <span class="text-primary font-semibold truncate">{{ product.name }}</span>
+      </nav>
+    </div>
+  </section>
+
+  <!-- ================= MAIN PRODUCT PRESENTATION (7:5 SPLIT) ================= -->
+  <section class="w-full py-space-xl">
+    <div class="max-w-[1440px] mx-auto px-margin">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+        
+        <!-- ================= COLUNA ESQUERDA: GALERIA & SPECS (7 COLS) ================= -->
+        <div class="lg:col-span-7 flex flex-col gap-space-lg">
+          
+          <!-- Canvas da Imagem Principal -->
+          <div class="relative bg-surface-container-low rounded-xl overflow-hidden shadow-2xl border border-outline-variant/50 group">
+            
+            <!-- Badges de Telemetria Flutuantes -->
+            <div class="absolute top-4 left-4 z-20 flex flex-col gap-2">
+              <span class="bg-surface-container-lowest/90 backdrop-blur-md text-primary font-label-mono text-xs px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5 border border-primary/30 shadow-lg">
+                <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                {{ product.brand }}
+              </span>
+              <span class="bg-surface-container-lowest/90 backdrop-blur-md text-on-surface font-label-mono text-xs px-3 py-1 rounded-full uppercase tracking-wider border border-outline-variant/40 shadow-lg">
+                SKU: {{ product.sku }}
+              </span>
+            </div>
+
+            <!-- Viewport da Imagem -->
+            <div class="w-full aspect-[4/3] flex items-center justify-center relative p-space-xl bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-surface-container-high/40 via-surface-container-low to-surface-container-lowest">
+              <img id="main-product-img" src="{{ product.get_image }}" alt="{{ product.name }}" class="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105 select-none"/>
+            </div>
+
+            <!-- Micro HUD Footer -->
+            <div class="p-space-sm bg-surface-container-lowest/80 backdrop-blur-sm flex items-center justify-between text-on-surface-variant font-label-mono text-xs border-t border-outline-variant/30">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[16px]">verified</span>
+                <span>HARDWARE GENUÍNO LACRADO</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary text-[16px]">speed</span>
+                <span>BENCHMARK HOMOLOGADO</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Miniaturas da Galeria -->
+          {% if gallery %}
+          <div class="flex items-center gap-3 overflow-x-auto pb-2">
+            <button type="button" class="gallery-thumb w-20 h-20 rounded bg-surface-container-lowest p-2 border-2 border-primary hud-glow-subtle flex-shrink-0 cursor-pointer transition-all" data-full-src="{{ product.get_image }}">
+              <img src="{{ product.get_image }}" alt="Thumbnail Principal" class="w-full h-full object-contain"/>
+            </button>
+            {% for img in gallery %}
+            <button type="button" class="gallery-thumb w-20 h-20 rounded bg-surface-container-lowest p-2 border border-outline-variant hover:border-primary flex-shrink-0 cursor-pointer transition-all" data-full-src="{{ img.get_image }}">
+              <img src="{{ img.get_image }}" alt="{{ img.caption|default:product.name }}" class="w-full h-full object-contain"/>
+            </button>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Descrição Detalhada -->
+          <div class="bg-surface-container rounded-lg p-space-lg border border-outline-variant/40">
+            <h3 class="font-headline text-base font-bold text-on-surface uppercase tracking-wider mb-space-sm flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">description</span>
+              Visão Geral do Componente
+            </h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed whitespace-pre-line">
+              {{ product.description }}
+            </p>
+          </div>
+
+          <!-- Matriz de Especificações Técnicas -->
+          {% if product.technical_specs %}
+          <div class="bg-surface-container rounded-lg p-space-lg border border-outline-variant/40">
+            <h3 class="font-headline text-base font-bold text-on-surface uppercase tracking-wider mb-space-md flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">memory</span>
+              Matriz de Telemetria &amp; Especificações
+            </h3>
+            
+            <div class="border border-outline-variant/30 rounded overflow-hidden">
+              <table class="w-full text-left text-xs font-label-mono">
+                <tbody>
+                  {% for key, val in product.technical_specs.items %}
+                  <tr class="{% cycle 'bg-surface-container-lowest' 'bg-surface-container-low' %} border-b border-outline-variant/20 last:border-0">
+                    <td class="p-3 text-on-surface-variant font-sans font-medium w-1/3">{{ key }}</td>
+                    <td class="p-3 text-on-surface font-bold">{{ val }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endif %}
+
+        </div>
+
+        <!-- ================= COLUNA DIREITA: COMPRA, PREÇO & FRETE (5 COLS) ================= -->
+        <div class="lg:col-span-5 flex flex-col gap-space-lg sticky top-32">
+          
+          <!-- Card de Compra -->
+          <div class="bg-surface-container rounded-xl p-space-xl border border-outline-variant/50 shadow-2xl flex flex-col gap-space-lg relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary"></div>
+
+            <!-- Identificação do Produto -->
+            <div>
+              <span class="font-label-mono text-xs text-primary font-semibold uppercase tracking-wider">
+                {{ product.brand }} &bull; {{ product.category.name }}
+              </span>
+              <h1 class="font-headline text-2xl sm:text-3xl font-bold text-on-surface mt-1 leading-tight">
+                {{ product.name }}
+              </h1>
+              <div class="flex items-center gap-3 mt-2 font-label-mono text-xs">
+                {% if product.stock > 0 %}
+                <span class="text-primary flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                  {{ product.stock }} UNIDADES DISPONÍVEIS
+                </span>
+                {% else %}
+                <span class="text-red-400">ESTOQUE ESGOTADO</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Caixa de Preços -->
+            <div class="bg-surface-container-low p-space-md rounded-lg border border-outline-variant/40 flex flex-col gap-1">
+              <span class="font-label-mono text-xs text-on-surface-variant line-through">
+                De: R$ {{ product.price|floatformat:2 }}
+              </span>
+              <div class="flex items-baseline gap-2">
+                <span class="font-label-mono text-3xl sm:text-4xl text-primary font-black tracking-tight">
+                  R$ {{ product.pix_price|floatformat:2 }}
+                </span>
+                <span class="bg-primary-container text-on-primary-container font-label-mono text-xs font-bold px-2 py-0.5 rounded">
+                  15% OFF NO PIX
+                </span>
+              </div>
+              <span class="font-body-sm text-xs text-on-surface-variant mt-1">
+                Ou até <strong>10x de R$ {{ product.installment_price|floatformat:2 }}</strong> sem juros no cartão de crédito
+              </span>
+            </div>
+
+            <!-- Formulário de Adicionar ao Carrinho -->
+            <form action="{% url 'store:cart_add' product_id=product.id %}" method="POST" class="flex flex-col gap-space-md">
+              {% csrf_token %}
+              
+              <div class="flex items-center gap-space-md">
+                <span class="font-label-sm text-xs text-on-surface-variant uppercase">Quantidade:</span>
+                <div class="flex items-center bg-surface-container-lowest border border-outline-variant rounded">
+                  <button type="button" onclick="const input = document.getElementById('qty-input'); if(input.value > 1) input.value--;" class="w-9 h-9 flex items-center justify-center text-on-surface hover:text-primary transition-colors">
+                    -
+                  </button>
+                  <input id="qty-input" type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-12 text-center bg-transparent border-0 text-sm font-label-mono text-on-surface focus:outline-none"/>
+                  <button type="button" onclick="const input = document.getElementById('qty-input'); if(input.value < {{ product.stock }}) input.value++;" class="w-9 h-9 flex items-center justify-center text-on-surface hover:text-primary transition-colors">
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {% if product.stock > 0 %}
+              <button type="submit" class="w-full py-4 rounded bg-primary-container text-on-primary-container font-headline text-sm font-bold uppercase tracking-wider hover:bg-secondary-fixed transition-all hud-glow-emerald flex items-center justify-center gap-2 shadow-lg cursor-pointer">
+                <span class="material-symbols-outlined text-[22px]">shopping_bag</span>
+                Adicionar ao Carrinho
+              </button>
+              {% else %}
+              <button type="button" disabled class="w-full py-4 rounded bg-surface-container-high text-on-surface-variant font-headline text-sm uppercase tracking-wider cursor-not-allowed opacity-60">
+                Produto Esgotado
+              </button>
+              {% endif %}
+            </form>
+
+            <!-- Simulação de Frete -->
+            <div class="border-t border-outline-variant/30 pt-space-md flex flex-col gap-space-sm">
+              <span class="font-headline text-xs font-bold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-primary text-[18px]">local_shipping</span>
+                Simular Prazo e Frete
+              </span>
+
+              <form method="GET" action="#frete" class="flex gap-2">
+                <input type="text" name="cep" value="{{ cep_queried|default:'' }}" placeholder="Digite seu CEP (00000-000)" class="flex-1 bg-surface-container-lowest border border-outline-variant/60 rounded px-3 py-2 text-xs font-label-mono text-on-surface focus:border-primary focus:outline-none"/>
+                <button type="submit" class="px-4 py-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-xs font-headline font-bold uppercase rounded transition-colors border border-outline-variant hover:border-primary">
+                  Calcular
+                </button>
+              </form>
+
+              {% if shipping_quote %}
+              <div id="frete" class="mt-2 flex flex-col gap-2 bg-surface-container-lowest p-space-sm rounded border border-outline-variant/30">
+                {% for option in shipping_quote %}
+                <div class="flex items-center justify-between text-xs font-label-mono py-1 border-b border-outline-variant/20 last:border-0">
+                  <div class="flex flex-col">
+                    <span class="text-on-surface font-sans font-semibold">{{ option.name }}</span>
+                    <span class="text-[10px] text-on-surface-variant">{{ option.days }}</span>
+                  </div>
+                  <span class="text-primary font-bold">R$ {{ option.price|floatformat:2 }}</span>
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Selos de Confiança -->
+            <div class="grid grid-cols-2 gap-2 pt-space-sm border-t border-outline-variant/30 font-label-mono text-[11px] text-on-surface-variant">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">shield</span>
+                <span>Garantia 3 Anos</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">sync</span>
+                <span>7 Dias Devolução</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Produtos Relacionados -->
+      {% if related_products %}
+      <div class="mt-space-2xl pt-space-xl border-t border-outline-variant/30">
+        <h2 class="font-headline text-xl font-bold text-on-surface uppercase tracking-tight mb-space-lg">
+          Outros Componentes em {{ product.category.name }}
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+          {% for rel in related_products %}
+          <a href="{% url 'store:product_detail' slug=rel.slug %}" class="bg-surface-container p-space-md rounded border border-outline-variant/40 hud-card-interactive flex flex-col justify-between">
+            <div class="w-full aspect-square rounded bg-surface-container-lowest p-3 flex items-center justify-center mb-2">
+              <img src="{{ rel.get_image }}" alt="{{ rel.name }}" class="w-full h-full object-contain"/>
+            </div>
+            <span class="font-label-mono text-[10px] text-primary uppercase">{{ rel.brand }}</span>
+            <span class="font-headline text-xs font-bold text-on-surface line-clamp-2">{{ rel.name }}</span>
+            <span class="font-label-mono text-sm text-primary font-bold mt-2">R$ {{ rel.pix_price|floatformat:2 }}</span>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </section>
+
+</div>
+{% endblock %}

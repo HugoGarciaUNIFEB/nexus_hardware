@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 52" fill="none">
+  <rect width="40" height="40" x="6" y="6" rx="10" fill="#27272A" stroke="#3F3F46" stroke-width="1.5"/>
+  <rect width="20" height="20" x="16" y="16" rx="4" fill="#18181B" stroke="#10B981" stroke-width="2"/>
+  <path d="M16 26H11M31 26H36M26 16V11M26 31V36" stroke="#10B981" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="26" cy="26" r="3.5" fill="#10B981"/>
+  <text x="58" y="32" fill="#F9FAFB" font-family="'Space Grotesk', system-ui, -apple-system, sans-serif" font-size="22" font-weight="800" letter-spacing="0.05em">NEXUS</text>
+  <text x="145" y="32" fill="#10B981" font-family="'Space Grotesk', system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" letter-spacing="0.02em">HARDWARE</text>
+</svg>

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Criar Conta | Nexus Hardware{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[calc(100vh-280px)] py-space-xl px-margin">
+  <div class="max-w-lg w-full bg-surface-container rounded-xl p-space-xl border border-outline-variant/40 shadow-2xl relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary"></div>
+
+    <div class="text-center mb-space-lg">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-surface-container-high border border-outline-variant/40 mb-3">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        <span class="font-label-mono text-[10px] text-primary uppercase tracking-wider font-bold">NOVO REGISTRO</span>
+      </div>
+      <h1 class="font-headline text-2xl font-extrabold text-on-surface uppercase tracking-tight">
+        Criar Conta Nexus
+      </h1>
+      <p class="font-body-sm text-xs text-on-surface-variant mt-1">
+        Junte-se à comunidade enthusiast de alto nível.
+      </p>
+    </div>
+
+    <form method="POST" action="{% url 'store:register' %}" class="flex flex-col gap-space-md">
+      {% csrf_token %}
+      
+      {% if form.non_field_errors %}
+      <div class="p-3 rounded bg-red-950/60 border border-red-800 text-red-300 text-xs">
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+
+      <div>
+        <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Nome Completo *</label>
+        {{ form.first_name }}
+        {% if form.first_name.errors %}<span class="text-red-400 text-xs">{{ form.first_name.errors }}</span>{% endif %}
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+        <div>
+          <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Nome de Usuário *</label>
+          {{ form.username }}
+          {% if form.username.errors %}<span class="text-red-400 text-xs">{{ form.username.errors }}</span>{% endif %}
+        </div>
+
+        <div>
+          <label class="block font-label-sm text-xs text-on-surface-variant mb-1">E-mail *</label>
+          {{ form.email }}
+          {% if form.email.errors %}<span class="text-red-400 text-xs">{{ form.email.errors }}</span>{% endif %}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+        <div>
+          <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Senha *</label>
+          {{ form.password }}
+          {% if form.password.errors %}<span class="text-red-400 text-xs">{{ form.password.errors }}</span>{% endif %}
+        </div>
+
+        <div>
+          <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Confirmar Senha *</label>
+          {{ form.password_confirm }}
+          {% if form.password_confirm.errors %}<span class="text-red-400 text-xs">{{ form.password_confirm.errors }}</span>{% endif %}
+        </div>
+      </div>
+
+      <button type="submit" class="w-full py-3.5 rounded bg-primary-container text-on-primary-container font-headline text-xs font-bold uppercase tracking-wider hover:bg-secondary-fixed transition-all hud-glow-emerald mt-2 shadow-lg cursor-pointer">
+        Finalizar Cadastro
+      </button>
+    </form>
+
+    <div class="mt-space-lg pt-space-md border-t border-outline-variant/30 text-center">
+      <p class="font-body-sm text-xs text-on-surface-variant">
+        Já possui credenciais Nexus?
+        <a href="{% url 'store:login' %}" class="text-primary font-bold hover:underline ml-1">
+          Faça login
+        </a>
+      </p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

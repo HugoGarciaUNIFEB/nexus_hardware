@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pedido Confirmado #{{ order.order_number }} | Nexus Hardware{% endblock %}
+
+{% block content %}
+<div class="flex flex-col w-full py-space-xl">
+  <div class="max-w-[900px] mx-auto px-margin w-full">
+    
+    <!-- Card de Confirmação Principal -->
+    <div class="bg-surface-container rounded-xl p-space-xl border border-primary/40 shadow-2xl relative overflow-hidden flex flex-col items-center text-center">
+      <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-secondary to-primary"></div>
+
+      <div class="w-16 h-16 rounded-full bg-primary/20 text-primary flex items-center justify-center mb-space-md hud-glow-emerald">
+        <span class="material-symbols-outlined text-[36px]">check_circle</span>
+      </div>
+
+      <span class="font-label-mono text-xs text-primary font-bold uppercase tracking-widest">
+        PEDIDO REGISTRADO COM SUCESSO
+      </span>
+
+      <h1 class="font-headline text-3xl font-extrabold text-on-surface mt-1 mb-2">
+        Obrigado pela sua compra, {{ order.full_name }}!
+      </h1>
+
+      <p class="font-label-mono text-sm text-on-surface-variant mb-space-lg">
+        Número do Pedido: <strong class="text-primary font-bold">{{ order.order_number }}</strong>
+      </p>
+
+      <!-- Instruções de Pagamento PIX se aplicável -->
+      {% if order.payment_method == 'PIX' %}
+      <div class="w-full bg-surface-container-low rounded-lg p-space-lg border border-outline-variant/40 mb-space-lg text-left flex flex-col sm:flex-row items-center gap-space-lg">
+        
+        <!-- Mock QR Code -->
+        <div class="w-36 h-36 bg-white p-2 rounded flex flex-col items-center justify-center flex-shrink-0 shadow-lg">
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <rect width="100" height="100" fill="#fff"/>
+            <rect x="10" y="10" width="30" height="30" fill="#000"/>
+            <rect x="15" y="15" width="20" height="20" fill="#fff"/>
+            <rect x="20" y="20" width="10" height="10" fill="#000"/>
+            <rect x="60" y="10" width="30" height="30" fill="#000"/>
+            <rect x="65" y="15" width="20" height="20" fill="#fff"/>
+            <rect x="70" y="20" width="10" height="10" fill="#000"/>
+            <rect x="10" y="60" width="30" height="30" fill="#000"/>
+            <rect x="15" y="65" width="20" height="20" fill="#fff"/>
+            <rect x="20" y="70" width="10" height="10" fill="#000"/>
+            <rect x="45" y="10" width="10" height="40" fill="#000"/>
+            <rect x="45" y="60" width="25" height="10" fill="#000"/>
+            <rect x="60" y="45" width="30" height="15" fill="#000"/>
+            <rect x="75" y="75" width="15" height="15" fill="#000"/>
+          </svg>
+        </div>
+
+        <div class="flex-1 flex flex-col gap-2">
+          <div class="flex items-center gap-2 font-headline text-sm font-bold text-on-surface uppercase">
+            <span class="material-symbols-outlined text-primary text-[20px]">qr_code_2</span>
+            Pagamento via PIX Instantâneo
+          </div>
+          <p class="text-xs text-on-surface-variant leading-relaxed">
+            Abra o app do seu banco, escolha a opção <strong>Pagar com PIX &gt; Ler QR Code</strong> ou copie a chave abaixo. A confirmação é instantânea e seu pedido entrará em separação em nosso laboratório.
+          </p>
+          <div class="bg-surface-container-lowest p-2 rounded border border-outline-variant/60 flex items-center justify-between gap-2 text-xs font-label-mono text-on-surface">
+            <span class="truncate">00020126360014BR.GOV.BCB.PIX011400000000000000520400005303986540{{ order.total_amount }}</span>
+            <button type="button" onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText); alert('Código PIX Copiado!');" class="px-2 py-1 bg-primary text-on-primary font-bold rounded text-[10px] hover:bg-secondary transition-colors whitespace-nowrap">
+              Copiar Código
+            </button>
+          </div>
+        </div>
+
+      </div>
+      {% endif %}
+
+      <!-- Detalhes do Pedido -->
+      <div class="w-full bg-surface-container-low rounded-lg p-space-md border border-outline-variant/40 mb-space-lg text-left">
+        <h3 class="font-headline text-xs font-bold text-on-surface uppercase tracking-wider mb-2 border-b border-outline-variant/30 pb-2">
+          Resumo dos Componentes Comprados
+        </h3>
+
+        <div class="divide-y divide-outline-variant/20">
+          {% for item in order.items.all %}
+          <div class="py-2 flex items-center justify-between text-xs font-label-mono">
+            <div>
+              <span class="text-on-surface font-sans font-medium">{{ item.quantity }}x {{ item.product.name }}</span>
+            </div>
+            <span class="text-primary font-bold">R$ {{ item.get_subtotal|floatformat:2 }}</span>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="border-t border-outline-variant/40 pt-3 mt-2 flex flex-col gap-1 text-xs font-label-mono">
+          <div class="flex justify-between text-on-surface-variant">
+            <span>Frete:</span>
+            <span>R$ {{ order.shipping_fee|floatformat:2 }}</span>
+          </div>
+          {% if order.discount_amount > 0 %}
+          <div class="flex justify-between text-primary">
+            <span>Desconto:</span>
+            <span>- R$ {{ order.discount_amount|floatformat:2 }}</span>
+          </div>
+          {% endif %}
+          <div class="flex justify-between font-bold text-sm text-on-surface pt-1 border-t border-outline-variant/20">
+            <span>Valor Total:</span>
+            <span class="text-primary text-base font-black">R$ {{ order.total_amount|floatformat:2 }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Endereço de Entrega -->
+      <div class="w-full text-left font-label-mono text-xs text-on-surface-variant bg-surface-container-lowest p-space-md rounded border border-outline-variant/30 mb-space-lg">
+        <span class="font-sans font-bold text-on-surface uppercase block mb-1">Destinatário &amp; Endereço:</span>
+        <p>{{ order.full_name }} &bull; {{ order.phone }}</p>
+        <p>{{ order.address }}, nº {{ order.number }}{% if order.complement %} - {{ order.complement }}{% endif %}</p>
+        <p>{{ order.neighborhood }} - {{ order.city }}/{{ order.state }} - CEP: {{ order.cep }}</p>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="flex flex-wrap items-center justify-center gap-space-md">
+        <a href="{% url 'store:home' %}" class="px-space-lg py-2.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-headline text-xs font-bold uppercase tracking-wider transition-colors border border-outline-variant">
+          Voltar para a Loja
+        </a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'store:account' %}" class="px-space-lg py-2.5 rounded bg-primary-container text-on-primary-container font-headline text-xs font-bold uppercase tracking-wider hover:bg-secondary-fixed transition-all hud-glow-subtle">
+          Ver Meus Pedidos
+        </a>
+        {% endif %}
+      </div>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

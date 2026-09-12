@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Finalizar Pedido | Nexus Hardware{% endblock %}
+
+{% block content %}
+<div class="flex flex-col w-full">
+
+  <!-- ================= PROGRESS STRIP ================= -->
+  <section class="w-full bg-surface-container-lowest border-b border-outline-variant/30">
+    <div class="max-w-[1440px] mx-auto px-margin py-space-sm flex items-center justify-between">
+      <div class="flex items-center gap-2 sm:gap-4 font-label-mono text-xs">
+        <a href="{% url 'store:cart' %}" class="text-on-surface-variant hover:text-primary transition-colors">01. CARRINHO</a>
+        <span class="text-outline-variant">&gt;</span>
+        <span class="text-primary font-bold flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+          02. CHECKOUT
+        </span>
+        <span class="text-outline-variant">&gt;</span>
+        <span class="text-on-surface-variant/60">03. CONFIRMAÇÃO</span>
+      </div>
+
+      <div class="hidden sm:flex items-center gap-2 font-label-mono text-xs text-primary">
+        <span class="material-symbols-outlined text-[16px]">verified</span>
+        <span>FINALIZAÇÃO SEGURA</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CHECKOUT MAIN ================= -->
+  <section class="w-full py-space-xl">
+    <div class="max-w-[1440px] mx-auto px-margin">
+      
+      <h1 class="font-headline text-2xl sm:text-3xl font-bold text-on-surface uppercase tracking-tight mb-space-lg flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary text-[32px]">local_shipping</span>
+        Dados de Envio e Pagamento
+      </h1>
+
+      <form method="POST" action="{% url 'store:checkout' %}" class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+        {% csrf_token %}
+
+        <!-- Coluna Esquerda: Dados do Cliente e Endereço (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col gap-space-lg">
+          
+          <!-- Seção 1: Dados Pessoais -->
+          <div class="bg-surface-container rounded-lg p-space-lg border border-outline-variant/40 shadow-lg">
+            <h2 class="font-headline text-sm font-bold text-on-surface uppercase tracking-wider mb-space-md flex items-center gap-2 border-b border-outline-variant/30 pb-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+              1. Identificação do Destinatário
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+              <div class="sm:col-span-2">
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Nome Completo *</label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}<span class="text-red-400 text-xs">{{ form.full_name.errors }}</span>{% endif %}
+              </div>
+
+              <div>
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">E-mail *</label>
+                {{ form.email }}
+                {% if form.email.errors %}<span class="text-red-400 text-xs">{{ form.email.errors }}</span>{% endif %}
+              </div>
+
+              <div>
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Telefone / Celular *</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}<span class="text-red-400 text-xs">{{ form.phone.errors }}</span>{% endif %}
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">CPF (Opcional para Nota Fiscal)</label>
+                {{ form.cpf }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção 2: Endereço de Entrega -->
+          <div class="bg-surface-container rounded-lg p-space-lg border border-outline-variant/40 shadow-lg">
+            <h2 class="font-headline text-sm font-bold text-on-surface uppercase tracking-wider mb-space-md flex items-center gap-2 border-b border-outline-variant/30 pb-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">pin_drop</span>
+              2. Endereço de Entrega
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
+              <div>
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">CEP *</label>
+                {{ form.cep }}
+                {% if form.cep.errors %}<span class="text-red-400 text-xs">{{ form.cep.errors }}</span>{% endif %}
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Endereço (Rua, Av.) *</label>
+                {{ form.address }}
+                {% if form.address.errors %}<span class="text-red-400 text-xs">{{ form.address.errors }}</span>{% endif %}
+              </div>
+
+              <div>
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Número *</label>
+                {{ form.number }}
+                {% if form.number.errors %}<span class="text-red-400 text-xs">{{ form.number.errors }}</span>{% endif %}
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Complemento</label>
+                {{ form.complement }}
+              </div>
+
+              <div>
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Bairro *</label>
+                {{ form.neighborhood }}
+                {% if form.neighborhood.errors %}<span class="text-red-400 text-xs">{{ form.neighborhood.errors }}</span>{% endif %}
+              </div>
+
+              <div>
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Cidade *</label>
+                {{ form.city }}
+                {% if form.city.errors %}<span class="text-red-400 text-xs">{{ form.city.errors }}</span>{% endif %}
+              </div>
+
+              <div>
+                <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Estado (UF) *</label>
+                {{ form.state }}
+                {% if form.state.errors %}<span class="text-red-400 text-xs">{{ form.state.errors }}</span>{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção 3: Forma de Pagamento -->
+          <div class="bg-surface-container rounded-lg p-space-lg border border-outline-variant/40 shadow-lg">
+            <h2 class="font-headline text-sm font-bold text-on-surface uppercase tracking-wider mb-space-md flex items-center gap-2 border-b border-outline-variant/30 pb-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">payments</span>
+              3. Método de Pagamento
+            </h2>
+
+            <div class="flex flex-col gap-3">
+              <label class="p-4 rounded border border-primary bg-primary/5 flex items-center justify-between cursor-pointer">
+                <div class="flex items-center gap-3">
+                  <input type="radio" name="payment_method" value="PIX" checked class="accent-primary w-4 h-4"/>
+                  <div>
+                    <span class="font-headline text-sm font-bold text-on-surface block">PIX Instantâneo</span>
+                    <span class="text-xs text-on-surface-variant">Aprovação em segundos com 15% de desconto já embutido</span>
+                  </div>
+                </div>
+                <span class="bg-primary-container text-on-primary-container font-label-mono text-xs font-bold px-2 py-0.5 rounded">
+                  15% OFF
+                </span>
+              </label>
+
+              <label class="p-4 rounded border border-outline-variant/40 hover:border-outline bg-surface-container-lowest flex items-center justify-between cursor-pointer">
+                <div class="flex items-center gap-3">
+                  <input type="radio" name="payment_method" value="CREDIT_CARD" class="accent-primary w-4 h-4"/>
+                  <div>
+                    <span class="font-headline text-sm font-bold text-on-surface block">Cartão de Crédito</span>
+                    <span class="text-xs text-on-surface-variant">Parcele em até 10x sem juros (Visa, Mastercard, Elo)</span>
+                  </div>
+                </div>
+                <span class="font-label-mono text-xs text-on-surface-variant">Até 10x</span>
+              </label>
+
+              <label class="p-4 rounded border border-outline-variant/40 hover:border-outline bg-surface-container-lowest flex items-center justify-between cursor-pointer">
+                <div class="flex items-center gap-3">
+                  <input type="radio" name="payment_method" value="BOLETO" class="accent-primary w-4 h-4"/>
+                  <div>
+                    <span class="font-headline text-sm font-bold text-on-surface block">Boleto Bancário</span>
+                    <span class="text-xs text-on-surface-variant">Vencimento em 2 dias úteis</span>
+                  </div>
+                </div>
+                <span class="font-label-mono text-xs text-on-surface-variant">À vista</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Coluna Direita: Resumo do Pedido (5 cols) -->
+        <div class="lg:col-span-5 flex flex-col gap-space-md sticky top-32">
+          <div class="bg-surface-container rounded-xl p-space-lg border border-outline-variant/50 shadow-2xl flex flex-col gap-space-md">
+            
+            <h3 class="font-headline text-sm font-bold text-on-surface uppercase tracking-wider border-b border-outline-variant/30 pb-2">
+              Itens do Pedido ({{ cart.get_total_items }})
+            </h3>
+
+            <!-- Mini Listagem de Itens -->
+            <div class="flex flex-col gap-3 max-h-60 overflow-y-auto pr-1 divide-y divide-outline-variant/20">
+              {% for item in cart.items.all %}
+              <div class="flex items-center justify-between gap-3 pt-2 first:pt-0">
+                <div class="flex items-center gap-2">
+                  <div class="w-10 h-10 rounded bg-surface-container-lowest p-1 flex-shrink-0 flex items-center justify-center">
+                    <img src="{{ item.product.get_image }}" alt="{{ item.product.name }}" class="w-full h-full object-contain"/>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-xs font-semibold text-on-surface line-clamp-1">{{ item.product.name }}</span>
+                    <span class="text-[10px] text-on-surface-variant font-label-mono">{{ item.quantity }}x R$ {{ item.product.pix_price|floatformat:2 }}</span>
+                  </div>
+                </div>
+                <span class="font-label-mono text-xs text-primary font-bold whitespace-nowrap">
+                  R$ {{ item.get_pix_subtotal|floatformat:2 }}
+                </span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Discriminação de Valores -->
+            <div class="border-t border-outline-variant/30 pt-3 flex flex-col gap-2 font-label-mono text-xs">
+              <div class="flex justify-between text-on-surface-variant">
+                <span>Subtotal:</span>
+                <span>R$ {{ cart.get_pix_subtotal|floatformat:2 }}</span>
+              </div>
+
+              {% if cart.coupon %}
+              <div class="flex justify-between text-primary">
+                <span>Cupom ({{ cart.coupon.code }}):</span>
+                <span>- R$ {{ cart.get_discount_amount|floatformat:2 }}</span>
+              </div>
+              {% endif %}
+
+              <div class="flex justify-between text-on-surface-variant">
+                <span>Frete (Nexus Express Seguro):</span>
+                <span>R$ {{ shipping_fee|floatformat:2 }}</span>
+              </div>
+
+              <div class="border-t border-outline-variant/30 pt-3 flex justify-between items-baseline">
+                <span class="font-sans font-bold text-sm text-on-surface">Total a Pagar:</span>
+                <span class="font-label-mono text-2xl text-primary font-black">
+                  R$ {{ total_with_shipping|floatformat:2 }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Botão de Finalização -->
+            <button type="submit" class="w-full py-4 rounded bg-primary-container text-on-primary-container font-headline text-sm font-bold uppercase tracking-wider hover:bg-secondary-fixed transition-all hud-glow-emerald flex items-center justify-center gap-2 shadow-xl cursor-pointer mt-2">
+              <span class="material-symbols-outlined text-[20px]">verified</span>
+              Confirmar e Gerar Pedido
+            </button>
+
+            <p class="font-label-mono text-[10px] text-on-surface-variant/70 text-center">
+              Ao clicar no botão acima, você concorda com os Termos de Venda e Garantia Nexus Hardware.
+            </p>
+
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+  </section>
+
+</div>
+{% endblock %}

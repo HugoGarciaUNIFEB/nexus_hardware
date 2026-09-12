@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Minha Conta & Pedidos | Nexus Hardware{% endblock %}
+
+{% block content %}
+<div class="flex flex-col w-full py-space-xl">
+  <div class="max-w-[1440px] mx-auto px-margin w-full">
+    
+    <!-- Header do Painel -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-space-xl pb-space-md border-b border-outline-variant/30">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+          <span class="font-label-mono text-xs text-primary uppercase tracking-wider font-semibold">PAINEL DO CLIENTE</span>
+        </div>
+        <h1 class="font-headline text-2xl sm:text-3xl font-extrabold text-on-surface uppercase tracking-tight">
+          Minha Conta
+        </h1>
+        <p class="font-body-sm text-xs text-on-surface-variant mt-1">
+          Bem-vindo(a), <strong class="text-on-surface">{{ user.first_name|default:user.username }}</strong> ({{ user.email }})
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        {% if user.is_staff %}
+        <a href="/admin/" target="_blank" class="px-3 py-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-headline text-xs font-bold uppercase transition-colors border border-primary/30 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">admin_panel_settings</span>
+          Admin Django
+        </a>
+        {% endif %}
+        <a href="{% url 'store:logout' %}" class="px-3 py-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-red-400 font-headline text-xs font-bold uppercase transition-colors border border-outline-variant flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">logout</span>
+          Sair da Conta
+        </a>
+      </div>
+    </div>
+
+    <!-- Conteúdo Principal: Histórico de Pedidos -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+      
+      <!-- Lista de Pedidos (8 cols) -->
+      <div class="lg:col-span-8 flex flex-col gap-space-lg">
+        <h2 class="font-headline text-lg font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[22px]">inventory_2</span>
+          Histórico de Pedidos ({{ orders.count }})
+        </h2>
+
+        {% if orders %}
+        <div class="flex flex-col gap-space-md">
+          {% for order in orders %}
+          <div class="bg-surface-container rounded-lg p-space-md border border-outline-variant/40 shadow-lg flex flex-col gap-space-sm">
+            
+            <!-- Barra Superior do Pedido -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-space-xs border-b border-outline-variant/30 font-label-mono text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-primary font-bold">#{{ order.order_number }}</span>
+                <span class="text-on-surface-variant">&bull; {{ order.created_at|date:"d/m/Y H:i" }}</span>
+              </div>
+
+              <!-- Status Badge -->
+              <div>
+                {% if order.status == 'PAID' or order.status == 'DELIVERED' %}
+                <span class="px-2.5 py-0.5 rounded bg-primary/20 text-primary font-bold border border-primary/30 text-[11px]">
+                  {{ order.get_status_display }}
+                </span>
+                {% elif order.status == 'SHIPPED' %}
+                <span class="px-2.5 py-0.5 rounded bg-blue-950 text-blue-400 font-bold border border-blue-800 text-[11px]">
+                  {{ order.get_status_display }}
+                </span>
+                {% elif order.status == 'CANCELLED' %}
+                <span class="px-2.5 py-0.5 rounded bg-red-950 text-red-400 font-bold border border-red-800 text-[11px]">
+                  {{ order.get_status_display }}
+                </span>
+                {% else %}
+                <span class="px-2.5 py-0.5 rounded bg-yellow-950 text-yellow-400 font-bold border border-yellow-800 text-[11px]">
+                  {{ order.get_status_display }}
+                </span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Itens do Pedido -->
+            <div class="divide-y divide-outline-variant/20">
+              {% for item in order.items.all %}
+              <div class="py-2 flex items-center justify-between text-xs font-label-mono">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded bg-surface-container-lowest p-1 flex items-center justify-center">
+                    <img src="{{ item.product.get_image }}" alt="{{ item.product.name }}" class="w-full h-full object-contain"/>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-sans font-semibold text-on-surface">{{ item.product.name }}</span>
+                    <span class="text-[10px] text-on-surface-variant">{{ item.quantity }}x de R$ {{ item.price_at_purchase|floatformat:2 }}</span>
+                  </div>
+                </div>
+                <span class="text-primary font-bold">R$ {{ item.get_subtotal|floatformat:2 }}</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Rodapé do Card de Pedido -->
+            <div class="pt-space-xs border-t border-outline-variant/30 flex items-center justify-between font-label-mono text-xs">
+              <span class="text-on-surface-variant">Método: {{ order.get_payment_method_display }}</span>
+              <div class="text-right">
+                <span class="text-on-surface-variant text-[11px]">Total Pago:</span>
+                <span class="text-primary font-bold text-sm ml-1">R$ {{ order.total_amount|floatformat:2 }}</span>
+              </div>
+            </div>
+
+          </div>
+          {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Sem Pedidos -->
+        <div class="bg-surface-container p-space-xl rounded-lg text-center flex flex-col items-center justify-center border border-outline-variant/40">
+          <div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant mb-space-md">
+            <span class="material-symbols-outlined text-[32px]">inventory_2</span>
+          </div>
+          <h3 class="font-headline text-base font-bold text-on-surface mb-1">Nenhum pedido realizado ainda</h3>
+          <p class="text-xs text-on-surface-variant max-w-sm mb-space-md">
+            Você ainda não adquiriu nenhum componente conosco. Dê uma olhada em nossas ofertas e monte seu setup!
+          </p>
+          <a href="{% url 'store:catalog' %}" class="px-space-md py-2 rounded bg-primary-container text-on-primary-container font-headline text-xs font-bold uppercase tracking-wider hover:bg-secondary-fixed transition-colors">
+            Explorar Catálogo
+          </a>
+        </div>
+        {% endif %}
+
+      </div>
+
+      <!-- Dados de Perfil & Segurança (4 cols) -->
+      <div class="lg:col-span-4 flex flex-col gap-space-md">
+        <div class="bg-surface-container rounded-lg p-space-lg border border-outline-variant/40 shadow-lg flex flex-col gap-space-sm">
+          <h3 class="font-headline text-sm font-bold text-on-surface uppercase tracking-wider border-b border-outline-variant/30 pb-2 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-primary text-[18px]">badge</span>
+            Credenciais de Telemetria
+          </h3>
+
+          <div class="flex flex-col gap-2 font-label-mono text-xs">
+            <div>
+              <span class="text-on-surface-variant text-[10px] block">USUÁRIO</span>
+              <span class="text-on-surface font-bold">{{ user.username }}</span>
+            </div>
+            <div>
+              <span class="text-on-surface-variant text-[10px] block">E-MAIL CADASTRADO</span>
+              <span class="text-on-surface font-bold">{{ user.email }}</span>
+            </div>
+            <div>
+              <span class="text-on-surface-variant text-[10px] block">MEMBRO DESDE</span>
+              <span class="text-on-surface font-bold">{{ user.date_joined|date:"d/m/Y" }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface-container rounded-lg p-space-md border border-outline-variant/40 text-xs font-label-mono text-on-surface-variant flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary text-[24px]">verified_user</span>
+          <div>
+            <strong class="text-on-surface block">Conta Autenticada</strong>
+            Privilégios de comprador prioritário ativos.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

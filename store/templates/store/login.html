@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login | Nexus Hardware{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[calc(100vh-280px)] py-space-xl px-margin">
+  <div class="max-w-md w-full bg-surface-container rounded-xl p-space-xl border border-outline-variant/40 shadow-2xl relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary"></div>
+
+    <div class="text-center mb-space-lg">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-surface-container-high border border-outline-variant/40 mb-3">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        <span class="font-label-mono text-[10px] text-primary uppercase tracking-wider font-bold">ACESSO RESTRITO</span>
+      </div>
+      <h1 class="font-headline text-2xl font-extrabold text-on-surface uppercase tracking-tight">
+        Conectar à Nexus
+      </h1>
+      <p class="font-body-sm text-xs text-on-surface-variant mt-1">
+        Acesse sua telemetria, pedidos e status em tempo real.
+      </p>
+    </div>
+
+    <form method="POST" action="{% url 'store:login' %}" class="flex flex-col gap-space-md">
+      {% csrf_token %}
+      
+      {% if form.non_field_errors %}
+      <div class="p-3 rounded bg-red-950/60 border border-red-800 text-red-300 text-xs">
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+
+      <div>
+        <label class="block font-label-sm text-xs text-on-surface-variant mb-1">Usuário</label>
+        {{ form.username }}
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="font-label-sm text-xs text-on-surface-variant">Senha</label>
+          <a href="#" class="text-[11px] text-primary hover:underline font-label-mono">Esqueceu?</a>
+        </div>
+        {{ form.password }}
+      </div>
+
+      <button type="submit" class="w-full py-3.5 rounded bg-primary-container text-on-primary-container font-headline text-xs font-bold uppercase tracking-wider hover:bg-secondary-fixed transition-all hud-glow-emerald mt-2 shadow-lg cursor-pointer">
+        Acessar Minha Conta
+      </button>
+    </form>
+
+    <div class="mt-space-lg pt-space-md border-t border-outline-variant/30 text-center">
+      <p class="font-body-sm text-xs text-on-surface-variant">
+        Ainda não faz parte do esquadrão?
+        <a href="{% url 'store:register' %}" class="text-primary font-bold hover:underline ml-1">
+          Cadastre-se agora
+        </a>
+      </p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
